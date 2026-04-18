@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Space Grotesk", sans-serif;
+  
+  --color-background: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-foreground: #111827;
+  
+  --color-primary: #1E3A8A;
+  --color-primary-foreground: #FFFFFF;
+  
+  --color-secondary: #F3F4F6;
+  --color-secondary-foreground: #111827;
+  
+  --color-muted: #F3F4F6;
+  --color-muted-foreground: #6B7280;
+  
+  --color-accent: #16A34A;
+  --color-accent-foreground: #FFFFFF;
+  
+  --color-destructive: #DC2626;
+  --color-destructive-foreground: #FFFFFF;
+  
+  --color-border: rgba(17, 24, 39, 0.08);
+  --color-input: rgba(11, 15, 26, 0.05);
+  --color-ring: #16A34A;
+  
+  --color-warning: #EAB308;
+  --color-danger: #DC2626;
+  
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  50% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-scan {
+  animation: scan 3s linear infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@layer base {
+  .dark {
+    --color-background: #0B0F1A;
+    --color-surface: #111827;
+    --color-foreground: #FFFFFF;
+    
+    --color-primary: #1E3A8A;
+    --color-primary-foreground: #FFFFFF;
+    
+    --color-secondary: #1F2937;
+    --color-secondary-foreground: #F8FAFC;
+    
+    --color-muted: #1F2937;
+    --color-muted-foreground: #94A3B8;
+    
+    --color-accent: #22C55E;
+    --color-accent-foreground: #0B0F1A;
+    
+    --color-destructive: #EF4444;
+    --color-destructive-foreground: #FFFFFF;
+    
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-input: rgba(255, 255, 255, 0.1);
+    --color-ring: #22C55E;
+    
+    --color-warning: #FACC15;
+    --color-danger: #EF4444;
+  }
+
+  * {
+    border-color: var(--color-border);
+    @apply transition-colors duration-300;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    @apply font-sans antialiased selection:bg-accent/30 tracking-tight;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold tracking-tighter text-foreground uppercase transition-colors duration-300;
+  }
+  p, span, div {
+    @apply transition-colors duration-300;
+  }
+}
+
+/* Geometric Balance Theme Components */
+
+.nav-card {
+  @apply bg-surface border border-border rounded-3xl p-5 shadow-sm;
+}
+
+.nav-item-geom {
+  @apply flex items-center gap-4 p-4 rounded-2xl cursor-pointer transition-colors font-medium hover:bg-muted;
+}
+
+.nav-item-geom.active {
+  @apply bg-primary text-primary-foreground;
+}
+
+.logo-geom {
+  @apply text-2xl font-extrabold tracking-tighter flex items-center gap-2;
+}
+
+.logo-geom span {
+  @apply text-accent;
+}
+
+.user-pill-geom {
+  @apply bg-surface px-4 py-2 rounded-full flex items-center gap-3 text-sm border border-border shadow-sm;
+}
+
+.role-badge-geom {
+  @apply text-[10px] uppercase tracking-widest bg-primary px-2 py-0.5 rounded font-bold text-primary-foreground;
+}
+
+.map-placeholder-geom {
+  @apply bg-muted/30 rounded-3xl border-2 border-dashed border-accent/20 flex flex-col items-center justify-center relative overflow-hidden;
+}
+
+.map-overlay-geom {
+  @apply absolute top-5 left-5 bg-surface/80 backdrop-blur-md px-5 py-3 rounded-xl border border-border shadow-md;
+}
+
+.action-btn-geom {
+  @apply bg-surface border border-border rounded-[20px] p-6 flex flex-col items-center gap-3 transition-all hover:bg-muted hover:-translate-y-0.5 shadow-sm;
+}
+
+.action-btn-geom.emergency {
+  @apply bg-danger text-destructive-foreground font-bold;
+}
+
+.icon-box-geom {
+  @apply w-10 h-10 bg-muted rounded-xl grid place-items-center text-xl shadow-inner;
+}
+
+.alert-card-geom {
+  @apply bg-surface p-4 rounded-[20px] border-l-4 border-warning shadow-sm;
+}
+
+.alert-card-geom.info {
+  @apply border-accent;
+}
+
+.tab-bar-geom {
+  @apply flex bg-muted p-1.5 rounded-2xl mb-5;
+}
+
+.tab-geom {
+  @apply flex-1 text-center py-2.5 rounded-xl text-sm font-semibold cursor-pointer text-muted-foreground;
+}
+
+.tab-geom.active {
+  @apply bg-surface text-accent shadow-sm;
+}
+
+.progress-bar-geom {
+  @apply h-1.5 bg-muted rounded-full overflow-hidden;
+}
+
+.progress-fill-geom {
+  @apply h-full bg-accent;
+}
+
+
