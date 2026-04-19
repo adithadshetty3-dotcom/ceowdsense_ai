@@ -21,7 +21,8 @@ import {
   Shield,
   Sparkles,
   Mic,
-  Volume2
+  Volume2,
+  Cpu
 } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { useNavigate } from 'react-router-dom';
