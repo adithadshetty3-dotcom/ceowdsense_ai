@@ -9,13 +9,14 @@ export default function SettingsPage() {
   const { user, highVisibility, setHighVisibility, language, setLanguage } = useStore();
 
   return (
-    <div className={`min-h-screen bg-background text-foreground p-6 transition-colors duration-500 ${highVisibility ? 'high-visibility' : ''}`}>
-      <header className="flex justify-between items-center mb-8 max-w-2xl mx-auto">
+    <div className={`min-h-screen bg-background text-foreground p-6 transition-colors duration-500 ${highVisibility ? 'high-visibility' : ''}`} role="main" aria-labelledby="settings-title">
+      <header className="flex justify-between items-center mb-8 max-w-2xl mx-auto" role="banner">
         <button 
           onClick={() => navigate('/attendee/dashboard')}
           className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-foreground hover:text-primary transition-colors"
+          aria-label="Back to Dashboard"
         >
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back
         </button>
         <ThemeToggle />
       </header>
@@ -26,7 +27,7 @@ export default function SettingsPage() {
         className="max-w-xl mx-auto"
       >
         <div className="mb-10">
-          <h1 className="text-5xl font-heading font-black tracking-tighter uppercase mb-2">App Settings</h1>
+          <h1 id="settings-title" className="text-5xl font-heading font-black tracking-tighter uppercase mb-2">App Settings</h1>
           <p className="text-xs text-foreground font-black uppercase tracking-[0.2em]">Configure your CrowdSense Experience</p>
         </div>
 

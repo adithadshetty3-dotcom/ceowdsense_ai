@@ -36,6 +36,12 @@
   --radius-3xl: 2rem;
 }
 
+/* Accessibility Focus States */
+:focus-visible {
+  outline: 3px solid var(--color-primary) !important;
+  outline-offset: 4px !important;
+}
+
 .high-visibility {
   --font-size-xs: 0.875rem; 
   --font-size-sm: 1rem;    

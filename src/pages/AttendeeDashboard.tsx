@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Map as MapIcon, 
@@ -31,6 +31,8 @@ import ThemeToggle from '../components/ThemeToggle';
 import Chatbot from '../components/Chatbot';
 import LiveViewNavigation from '../components/LiveViewNavigation';
 import { routes } from '../lib/dummy-data';
+import { useCrowdMetrics } from '../lib/efficiency';
+import { sanitizeInput } from '../lib/security';
 
 const quickActions = [
   { id: 'camera', icon: Camera, label: 'AR Navigation', symbol: '📍', primary: true },
@@ -88,6 +90,7 @@ export default function AttendeeDashboard() {
   const { user, logout, setSelectedRoute, language, setLanguage, highVisibility } = useStore();
   const navigate = useNavigate();
   const t = translations[language] || translations.EN;
+  const metrics = useCrowdMetrics(72); // Current stadium occupancy is 72%
   const [isSOSActive, setIsSOSActive] = useState(false);
   const [isVoiceOverlayOpen, setIsVoiceOverlayOpen] = useState(false);
   const [voiceText, setVoiceText] = useState("");
@@ -116,12 +119,12 @@ export default function AttendeeDashboard() {
   const [isLiveViewActive, setIsLiveViewActive] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     navigate('/');
-  };
+  }, [logout, navigate]);
 
-  const playSOS = () => {
+  const playSOS = useCallback(() => {
     try {
       if (!audioRef.current) {
         audioRef.current = new Audio("/sounds/sos.mp3");
@@ -130,7 +133,7 @@ export default function AttendeeDashboard() {
     } catch (e) {
       console.error("SOS Sound error:", e);
     }
-  };
+  }, []);
 
   const handleAction = (id: string) => {
     if (id === 'camera') setIsLiveViewActive(true);
@@ -181,8 +184,8 @@ export default function AttendeeDashboard() {
       </AnimatePresence>
 
       {/* Header */}
-      <header className="h-20 px-6 lg:px-10 flex justify-between items-center border-b border-border bg-surface/80 backdrop-blur-xl z-50 sticky top-0">
-        <div className="logo-geom group cursor-pointer" onClick={() => navigate('/')}>
+      <header role="banner" className="h-20 px-6 lg:px-10 flex justify-between items-center border-b border-border bg-surface/80 backdrop-blur-xl z-50 sticky top-0">
+        <div className="logo-geom group cursor-pointer" onClick={() => navigate('/')} role="button" aria-label="Go to Home">
           <span className="bg-primary text-white w-8 h-8 rounded-lg flex items-center justify-center font-black group-hover:rotate-12 transition-transform">C</span>
           <span className="font-heading font-black tracking-tighter text-xl text-foreground">CROWDSENSE <span className="text-accent">AI</span></span>
         </div>
@@ -192,16 +195,18 @@ export default function AttendeeDashboard() {
             whileTap={{ scale: 0.9 }}
             onClick={readScreen}
             className="w-10 h-10 rounded-full bg-muted/30 border border-border flex items-center justify-center text-foreground hover:text-primary transition-all shadow-sm"
+            aria-label="Read Screen Aloud"
             title="Read Screen"
           >
             <Volume2 className="w-5 h-5" />
           </motion.button>
-          <div className="flex bg-muted/30 rounded-full p-1 border border-border">
+          <div className="flex bg-muted/30 rounded-full p-1 border border-border" role="group" aria-label="Language Selector">
             {['EN', 'HI'].map((lang) => (
               <button
                 key={lang}
                 onClick={() => setLanguage(lang as 'EN' | 'HI')}
                 className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${language === lang ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-foreground'}`}
+                aria-pressed={language === lang}
               >
                 {lang}
               </button>
@@ -221,15 +226,15 @@ export default function AttendeeDashboard() {
       </header>
 
       {/* Main Layout */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-[300px_1fr_320px] gap-8 p-6 lg:p-10 overflow-hidden">
+      <main role="main" className="flex-1 grid grid-cols-1 lg:grid-cols-[300px_1fr_320px] gap-8 p-6 lg:p-10 overflow-hidden">
         
         {/* Left: Venue Stats & Profile */}
-        <section className="hidden lg:flex flex-col gap-6">
+        <section aria-labelledby="venue-insight-title" className="hidden lg:flex flex-col gap-6">
           <div className="bg-surface border border-border rounded-[2.5rem] p-8 shadow-xl relative overflow-hidden group">
              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
                 <Users className="w-24 h-24 text-foreground" />
              </div>
-             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground mb-4">Venue Insight</h4>
+             <h4 id="venue-insight-title" className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground mb-4">Venue Insight</h4>
              <div className="flex items-baseline gap-2 mb-1">
                 <span className="text-5xl font-black font-heading tracking-tighter text-foreground">72%</span>
                 <span className="text-accent text-xs font-black flex items-center gap-1 uppercase tracking-widest">
@@ -244,35 +249,42 @@ export default function AttendeeDashboard() {
                   className="h-full bg-gradient-to-r from-primary to-accent rounded-full" 
                 />
              </div>
+             <div className="mt-4 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+                <div className="flex items-center gap-2 mb-1">
+                   <Cpu className="w-3 h-3 text-primary" />
+                   <span className="text-[9px] font-black uppercase tracking-widest text-primary">AI Recommendation</span>
+                </div>
+                <p className="text-[10px] font-bold text-foreground opacity-80 uppercase leading-tight">{metrics.recommendation} Strategy: Path-Priority {metrics.alertLevel}</p>
+             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
-             <div className="nav-item-geom active shadow-lg scale-[1.02]">
+          <div className="flex flex-col gap-3" role="navigation" aria-label="Main Sidebar Navigation">
+             <div className="nav-item-geom active shadow-lg scale-[1.02]" role="link" aria-current="page">
                 <LayoutDashboard className="w-5 h-5 mx-2 text-white" />
                 <span className="text-sm font-black uppercase tracking-widest text-white tracking-widest">{t.dashboard}</span>
              </div>
-             <div onClick={() => setIsLiveViewActive(true)} className="nav-item-geom text-foreground hover:text-accent transition-all group">
+             <div onClick={() => setIsLiveViewActive(true)} className="nav-item-geom text-foreground hover:text-accent transition-all group" role="button" aria-label="Open AR Navigation">
                 <Camera className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
                 <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.ar_nav}</span>
              </div>
-             <div onClick={() => navigate('/attendee/ticket')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
+             <div onClick={() => navigate('/attendee/ticket')} className="nav-item-geom text-foreground hover:text-primary transition-all group" role="link" aria-label="Go to My Tickets">
                 <Ticket className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
                 <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.tickets}</span>
              </div>
-             <div onClick={() => navigate('/attendee/dining')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
+             <div onClick={() => navigate('/attendee/dining')} className="nav-item-geom text-foreground hover:text-primary transition-all group" role="link" aria-label="Go to Dining">
                 <Utensils className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
                 <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.dining}</span>
              </div>
-             <div onClick={() => navigate('/attendee/settings')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
+             <div onClick={() => navigate('/attendee/settings')} className="nav-item-geom text-foreground hover:text-primary transition-all group" role="link" aria-label="Go to Settings">
                 <Settings className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
                 <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.settings}</span>
              </div>
-             <div className="h-px bg-border my-2 opacity-50" />
-             <div onClick={() => navigate('/testing')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
+             <div className="h-px bg-border my-2 opacity-50" aria-hidden="true" />
+             <div onClick={() => navigate('/testing')} className="nav-item-geom text-foreground hover:text-primary transition-all group" role="link" aria-label="Go to System Test Dashboard">
                 <Activity className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
                 <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.test}</span>
              </div>
-             <div onClick={() => navigate('/security')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
+             <div onClick={() => navigate('/security')} className="nav-item-geom text-foreground hover:text-primary transition-all group" role="link" aria-label="Go to Security Operations">
                 <Shield className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
                 <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.security}</span>
              </div>

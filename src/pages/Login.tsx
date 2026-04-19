@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { LogIn, ArrowLeft } from 'lucide-react';
+import { LogIn, ArrowLeft, Shield } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
+import { sanitizeInput, validateEmail } from '../lib/security';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,8 +22,16 @@ export default function Login() {
     e.preventDefault();
     setError(null);
 
-    if (!email.trim() || !password.trim()) {
+    const safeEmail = sanitizeInput(email);
+    const safePassword = sanitizeInput(password);
+
+    if (!safeEmail.trim() || !safePassword.trim()) {
       setError("Please fill in all security fields.");
+      return;
+    }
+
+    if (!validateEmail(safeEmail)) {
+      setError("Please enter a valid security-approved email format.");
       return;
     }
     
@@ -58,13 +67,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-background transition-colors duration-500 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background transition-colors duration-500 relative overflow-hidden" role="main" aria-labelledby="login-title">
       <div className="absolute top-8 left-8 z-50">
         <button 
           onClick={() => navigate('/')} 
           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-foreground hover:text-primary transition-colors"
+          aria-label="Back to landing page"
         >
-          <ArrowLeft className="w-4 h-4 text-current" /> Back
+          <ArrowLeft className="w-4 h-4 text-current" aria-hidden="true" /> Back
         </button>
       </div>
       
@@ -79,14 +89,14 @@ export default function Login() {
       >
         <div className="bg-surface border-4 border-foreground rounded-[3rem] p-8 lg:p-12 shadow-[20px_20px_0px_rgba(30,58,138,0.1)]">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-heading font-black tracking-tighter uppercase mb-4 text-foreground leading-none">
+            <h2 id="login-title" className="text-4xl font-heading font-black tracking-tighter uppercase mb-4 text-foreground leading-none">
               Welcome <br/> Back
             </h2>
             <div className="inline-block px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-accent flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                Signing in as {role}
-              </p>
+               <p className="text-[10px] uppercase tracking-[0.2em] font-black text-accent flex items-center gap-2">
+                 <Shield className="w-1.5 h-1.5 rounded-full" />
+                 Signing in as {role}
+               </p>
             </div>
           </div>
 

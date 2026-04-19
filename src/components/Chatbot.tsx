@@ -89,9 +89,11 @@ export default function Chatbot() {
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 lg:bottom-10 lg:right-10 w-16 h-16 bg-primary text-white rounded-full shadow-[0_0_30px_rgba(30,58,138,0.3)] flex items-center justify-center z-[100] border-4 border-background"
+        aria-label="Open AI Assistant"
+        aria-expanded={isOpen}
       >
-        <MessageSquare className="w-7 h-7" />
-        <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-background animate-bounce">1</span>
+        <MessageSquare className="w-7 h-7" aria-hidden="true" />
+        <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-background animate-bounce" aria-label="1 new message">1</span>
       </motion.button>
 
       {/* Chat Panel */}
@@ -101,6 +103,8 @@ export default function Chatbot() {
             initial={{ opacity: 0, y: 100, scale: 0.9, rotateX: 20 }}
             animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
             exit={{ opacity: 0, y: 100, scale: 0.9 }}
+            role="dialog"
+            aria-label="CrowdSense AI Chat Assistant"
             className="fixed inset-0 lg:inset-auto lg:bottom-28 lg:right-10 lg:w-[420px] lg:h-[650px] bg-surface border border-border lg:rounded-[2.5rem] shadow-2xl z-[110] flex flex-col overflow-hidden"
           >
             {/* Header */}
@@ -168,6 +172,7 @@ export default function Chatbot() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                  aria-label="Message Input"
                   className="flex-1 bg-transparent px-3 py-3 text-sm focus:outline-none placeholder-muted-foreground text-foreground font-medium"
                 />
                 <div className="flex gap-1">
@@ -175,18 +180,20 @@ export default function Chatbot() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleVoice}
+                    aria-label="Voice Command"
                     className={`w-12 h-12 ${isListening ? 'bg-danger animate-pulse' : 'bg-muted'} text-foreground rounded-xl flex items-center justify-center hover:bg-muted/80 transition-all font-black shadow-lg`}
                   >
-                    <Mic className={`w-5 h-5 ${isListening ? 'text-white' : ''}`} />
+                    <Mic className={`w-5 h-5 ${isListening ? 'text-white' : ''}`} aria-hidden="true" />
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSend()}
                     disabled={!input.trim()}
+                    aria-label="Send Message"
                     className="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center hover:bg-primary/90 transition-all font-black shadow-lg disabled:opacity-50"
                   >
-                    <Send className="w-5 h-5 pl-0.5" />
+                    <Send className="w-5 h-5 pl-0.5" aria-hidden="true" />
                   </motion.button>
                 </div>
               </div>
