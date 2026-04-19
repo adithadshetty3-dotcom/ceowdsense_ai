@@ -28,7 +28,7 @@ import LiveViewNavigation from '../components/LiveViewNavigation';
 import { routes } from '../lib/dummy-data';
 
 const quickActions = [
-  { id: 'camera', icon: Camera, label: 'Live View', symbol: '📷', primary: true },
+  { id: 'camera', icon: Camera, label: 'AR Navigation', symbol: '📍', primary: true },
   { id: 'exit', icon: DoorOpen, label: 'Find Exit', symbol: '🚪' },
   { id: 'restroom', icon: Bath, label: 'Restroom', symbol: '🚻' },
   { id: 'food', icon: Utensils, label: 'Dining', symbol: '🍔' },
@@ -161,6 +161,10 @@ export default function AttendeeDashboard() {
              <div className="nav-item-geom active shadow-lg scale-[1.02]">
                 <LayoutDashboard className="w-5 h-5 mx-2 text-white" />
                 <span className="text-sm font-black uppercase tracking-widest text-white tracking-widest">Dashboard</span>
+             </div>
+             <div onClick={() => setIsLiveViewActive(true)} className="nav-item-geom text-foreground hover:text-accent transition-all group">
+                <Camera className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
+                <span className="text-sm font-black uppercase tracking-widest text-foreground">AR Navigation</span>
              </div>
              <div onClick={() => navigate('/attendee/ticket')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
                 <Ticket className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />

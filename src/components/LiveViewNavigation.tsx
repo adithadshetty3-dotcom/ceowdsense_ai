@@ -21,23 +21,24 @@ export default function LiveViewNavigation({ onClose }: LiveViewNavigationProps)
   const { selectedRoute } = useStore();
 
   const [error, setError] = useState<string | null>(null);
+  const [locationStatus, setLocationStatus] = useState<'pending' | 'granted' | 'denied'>('pending');
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     let currentStream: MediaStream | null = null;
+    
     async function setupCamera() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         setError("Camera API is not supported in this browser or environment (requires HTTPS).");
         return;
       }
       try {
-        // Try back camera first
         let mediaStream: MediaStream;
         try {
           mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { facingMode: { ideal: 'environment' } } 
           });
         } catch (e) {
-          // Fallback to any camera
           mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
         }
 
@@ -51,14 +52,51 @@ export default function LiveViewNavigation({ onClose }: LiveViewNavigationProps)
         console.error("Camera access denied:", err);
         const errorMessage = err instanceof Error ? err.message : String(err);
         if (errorMessage.includes("Permission denied") || errorMessage.includes("NotAllowedError")) {
-          setError("Camera permission was denied. Please click the camera icon in your browser's address bar to allow access for this site.");
+          setError("Camera permission was denied. Please allow camera access to use AR Navigation.");
         } else {
-          setError(`Camera Error: ${errorMessage}. Please ensure your device has a working camera.`);
+          setError(`Camera Error: ${errorMessage}`);
         }
       }
     }
 
+    async function setupLocation() {
+      if (!navigator.geolocation) {
+        setLocationStatus('denied');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCoords({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+          setLocationStatus('granted');
+        },
+        (err) => {
+          console.error("Location error:", err);
+          setLocationStatus('denied');
+        },
+        { enableHighAccuracy: true }
+      );
+
+      return navigator.geolocation.watchPosition(
+        (position) => {
+          setCoords({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        null,
+        { enableHighAccuracy: true }
+      );
+    }
+
     setupCamera();
+    let locationWatchId: number | null = null;
+    setupLocation().then(id => {
+      if (typeof id === 'number') locationWatchId = id;
+    });
 
     const interval = setInterval(() => {
       setCurrentStep(prev => (prev + 1) % steps.length);
@@ -67,6 +105,9 @@ export default function LiveViewNavigation({ onClose }: LiveViewNavigationProps)
     return () => {
       if (currentStream) {
         currentStream.getTracks().forEach(track => track.stop());
+      }
+      if (locationWatchId !== null) {
+        navigator.geolocation.clearWatch(locationWatchId);
       }
       clearInterval(interval);
     };
@@ -90,7 +131,10 @@ export default function LiveViewNavigation({ onClose }: LiveViewNavigationProps)
         {/* Header */}
         <div className="w-full flex justify-between items-start">
           <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20">
-            <h2 className="text-white text-xs font-black uppercase tracking-widest">Live View Navigation</h2>
+            <h2 className="text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+              Live AR Navigation
+            </h2>
           </div>
           <button 
             onClick={onClose}
@@ -100,24 +144,29 @@ export default function LiveViewNavigation({ onClose }: LiveViewNavigationProps)
           </button>
         </div>
 
-        {error ? (
+        {error || locationStatus === 'denied' ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-danger/90 backdrop-blur-xl p-8 rounded-[2.5rem] border-2 border-white/20 max-w-sm text-center shadow-2xl"
+            className="bg-black/80 backdrop-blur-xl p-8 rounded-[2.5rem] border-2 border-white/20 max-w-sm text-center shadow-2xl relative z-10"
           >
-            <AlertTriangle className="w-16 h-16 text-white mx-auto mb-6" />
-            <h3 className="text-white text-xl font-black uppercase tracking-tight mb-4">Camera Error</h3>
-            <p className="text-white text-sm font-bold leading-relaxed mb-6">
-              {error}
+            <AlertTriangle className="w-16 h-16 text-warning mx-auto mb-6" />
+            <h3 className="text-white text-xl font-black uppercase tracking-tight mb-4">Permissions Required</h3>
+            <p className="text-white/80 text-sm font-bold leading-relaxed mb-6 px-4">
+              {error ? error : "Location access is required for real-time guidance. Please enable location services in your browser settings."}
             </p>
             <button 
               onClick={onClose}
-              className="w-full py-4 bg-white text-danger rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all"
+              className="w-full py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all"
             >
-              Go Back
+              Adjust Settings
             </button>
           </motion.div>
+        ) : locationStatus === 'pending' ? (
+          <div className="flex flex-col items-center gap-4">
+             <div className="w-8 h-8 border-4 border-white/20 border-t-accent rounded-full animate-spin" />
+             <p className="text-white text-[10px] font-black uppercase tracking-widest">Calibrating Location...</p>
+          </div>
         ) : (
           /* AR Navigation Content (Arrows, etc.) */
           <AnimatePresence mode="wait">
