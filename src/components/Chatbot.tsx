@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, Send, X, Bot, User, Sparkles, Mic, Volume2 } from 'lucide-react';
+import { useStore } from '../lib/store';
 
 const responses: Record<string, string> = {
   "exit": "Nearest exit is Gate A. Follow the navigation panel for step-by-step directions.",
@@ -21,6 +22,7 @@ const TypingIndicator = () => (
 );
 
 export default function Chatbot() {
+  const { language } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -48,13 +50,39 @@ export default function Chatbot() {
   };
 
   const handleVoice = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setInput("Voice not supported");
+      setTimeout(() => setInput(""), 2000);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = language === 'HI' ? 'hi-IN' : 'en-US';
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
     setIsListening(true);
-    setInput("Say your command...");
-    setTimeout(() => {
-      setInput("Navigating to Gate B");
+    setInput(language === 'HI' ? "सुन रहा हूँ..." : "Listening...");
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      
+      if (event.results[0].isFinal) {
+        setIsListening(false);
+        setTimeout(() => handleSend(transcript), 600);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
       setIsListening(false);
-      setTimeout(() => handleSend("Navigating to Gate B"), 500);
-    }, 2000);
+      setInput(language === 'HI' ? "खराबी: फिर से बोलें" : "Error: Speak again");
+      setTimeout(() => setInput(""), 2000);
+    };
+
+    recognition.start();
   };
 
   const handleSend = (textOverride?: string) => {

@@ -97,15 +97,46 @@ export default function AttendeeDashboard() {
   const [voiceText, setVoiceText] = useState("");
 
   const handleVoiceCommand = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setVoiceText("Not supported in this browser");
+      setIsVoiceOverlayOpen(true);
+      setTimeout(() => setIsVoiceOverlayOpen(false), 3000);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = language === 'HI' ? 'hi-IN' : 'en-US';
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
     setIsVoiceOverlayOpen(true);
-    setVoiceText("Listening...");
-    setTimeout(() => {
-      setVoiceText("Navigating to Gate B");
-      setTimeout(() => {
-        setIsVoiceOverlayOpen(false);
-        setIsLiveViewActive(true);
-      }, 1500);
-    }, 2000);
+    setVoiceText(language === 'HI' ? "सुन रहा हूँ..." : "Listening...");
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setVoiceText(transcript);
+      
+      if (event.results[0].isFinal) {
+        const lower = transcript.toLowerCase();
+        setTimeout(() => {
+          setIsVoiceOverlayOpen(false);
+          // Smart trigger: if they mention navigation keywords
+          if (lower.includes('gate') || lower.includes('exit') || lower.includes('navigate') || 
+              lower.includes('निकास') || lower.includes('रास्ता') || lower.includes('गेट')) {
+            setIsLiveViewActive(true);
+          }
+        }, 1500);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
+      setVoiceText(language === 'HI' ? "त्रुटि: पुनः प्रयास करें" : "Error: Try again");
+      setTimeout(() => setIsVoiceOverlayOpen(false), 2000);
+    };
+
+    recognition.start();
   };
 
   const readScreen = () => {

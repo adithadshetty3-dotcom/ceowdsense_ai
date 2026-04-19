@@ -1,6 +1,6 @@
 {
   "name": "CrowdSense AI",
   "description": "Crowd management and navigation for large-scale sporting venues.",
-  "requestFramePermissions": ["camera", "geolocation"],
+  "requestFramePermissions": ["camera", "geolocation", "microphone"],
   "majorCapabilities": []
 }
