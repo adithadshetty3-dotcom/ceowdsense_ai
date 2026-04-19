@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageSquare, Send, X, Bot, User, Sparkles } from 'lucide-react';
+import { MessageSquare, Send, X, Bot, User, Sparkles, Mic, Volume2 } from 'lucide-react';
 
 const responses: Record<string, string> = {
   "exit": "Nearest exit is Gate A. Follow the navigation panel for step-by-step directions.",
   "restroom": "Restrooms are available near the Food Court and Section 204.",
-  "crowd": "Gate A is currently experiencing high density. Try Gate B or C for a faster exit.",
-  "food": "The main Food Court is located at the South end of the plaza.",
-  "seat": "Please check your ticket for the section number or use 'Find My Seat' in the dashboard.",
+  "crowd": "Gate A is crowded. Try Gate C. Recommended route updated based on live crowd mapping.",
+  "food": "Food court wait time is approximately 8 minutes. Queue is currently below average.",
   "sos": "Emergency support has been notified. Stay where you are, help is on the way.",
+  "gate": "Gate B is currently free. 0 min wait time.",
+  "route": "Recommended route updated based on live crowd density analysis.",
 };
 
 const TypingIndicator = () => (
@@ -23,8 +24,9 @@ export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [messages, setMessages] = useState<{ role: 'bot' | 'user'; content: string }[]>([
-    { role: 'bot', content: "Namaste! I'm CrowdSense AI. How can I help you navigate the stadium today?" }
+    { role: 'bot', content: "Namaste! I'm CrowdSense AI, powered by Google Gemini. How can I help you navigate the stadium today?" }
   ]);
   
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -35,15 +37,35 @@ export default function Chatbot() {
     }
   }, [messages, isTyping]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const speak = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
-    const userMsg = input.trim().toLowerCase();
-    setMessages(prev => [...prev, { role: 'user', content: input }]);
+  const handleVoice = () => {
+    setIsListening(true);
+    setInput("Say your command...");
+    setTimeout(() => {
+      setInput("Navigating to Gate B");
+      setIsListening(false);
+      setTimeout(() => handleSend("Navigating to Gate B"), 500);
+    }, 2000);
+  };
+
+  const handleSend = (textOverride?: string) => {
+    const val = textOverride || input;
+    if (!val.trim()) return;
+
+    const userMsg = val.trim().toLowerCase();
+    setMessages(prev => [...prev, { role: 'user', content: val }]);
     setInput('');
     setIsTyping(true);
 
-    // Logic for bot response
     setTimeout(() => {
       let botResponse = "I'm here to help with navigation and crowd info. Try asking about 'exit', 'restroom', or 'stadium capacity'.";
       
@@ -91,7 +113,7 @@ export default function Chatbot() {
                   <Bot className="w-7 h-7" />
                 </div>
                 <div>
-                  <h3 className="font-heading font-black text-xl leading-tight tracking-tighter uppercase">CrowdSense AI</h3>
+                  <h3 className="font-heading font-black text-xl leading-tight tracking-tighter uppercase whitespace-pre">CrowdSense AI <span className="block text-[8px] tracking-[0.3em] opacity-80">Powered by Gemini</span></h3>
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                     <p className="text-[10px] uppercase font-black tracking-widest">Online · Smart Support</p>
@@ -116,12 +138,20 @@ export default function Chatbot() {
                     <div className={`w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center shadow-sm ${msg.role === 'user' ? 'bg-accent text-white' : 'bg-primary text-white'}`}>
                       {msg.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
                     </div>
-                    <div className={`p-5 rounded-2xl text-sm font-medium leading-relaxed shadow-sm ${
+                    <div className={`group p-5 rounded-2xl text-sm font-medium leading-relaxed shadow-sm relative ${
                       msg.role === 'user' 
                         ? 'bg-primary text-white rounded-tr-none' 
                         : 'bg-muted text-foreground rounded-tl-none'
                     }`}>
                       {msg.content}
+                      {msg.role === 'bot' && (
+                        <button 
+                          onClick={() => speak(msg.content)}
+                          className="absolute bottom-1 right-1 p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:text-accent"
+                        >
+                          <Volume2 className="w-3 h-3" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -140,17 +170,29 @@ export default function Chatbot() {
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                   className="flex-1 bg-transparent px-3 py-3 text-sm focus:outline-none placeholder-muted-foreground text-foreground font-medium"
                 />
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleSend}
-                  disabled={!input.trim()}
-                  className="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center hover:bg-primary/90 transition-all font-black shadow-lg disabled:opacity-50"
-                >
-                  <Send className="w-5 h-5 pl-0.5" />
-                </motion.button>
+                <div className="flex gap-1">
+                   <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleVoice}
+                    className={`w-12 h-12 ${isListening ? 'bg-danger animate-pulse' : 'bg-muted'} text-foreground rounded-xl flex items-center justify-center hover:bg-muted/80 transition-all font-black shadow-lg`}
+                  >
+                    <Mic className={`w-5 h-5 ${isListening ? 'text-white' : ''}`} />
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleSend()}
+                    disabled={!input.trim()}
+                    className="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center hover:bg-primary/90 transition-all font-black shadow-lg disabled:opacity-50"
+                  >
+                    <Send className="w-5 h-5 pl-0.5" />
+                  </motion.button>
+                </div>
               </div>
-              <p className="text-[10px] text-gray-900 dark:text-white mt-3 text-center uppercase font-black tracking-widest italic">AI-Powered Stadium Assistant</p>
+              <p className="text-[10px] text-gray-900 dark:text-white mt-3 text-center uppercase font-black tracking-widest italic flex items-center justify-center gap-2">
+                 <Sparkles className="w-3 h-3 text-primary" /> Multi-modal Smart Analysis
+              </p>
             </div>
           </motion.div>
         )}

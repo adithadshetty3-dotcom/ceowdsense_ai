@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { Button } from '../components/ui/button';
@@ -13,11 +13,19 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const role = user?.role || 'attendee';
 
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    if (!email.trim() || !password.trim()) {
+      setError("Please fill in all security fields.");
+      return;
+    }
+    
     setIsLoading(true);
     
     // Simulate login for this phase
@@ -81,6 +89,19 @@ export default function Login() {
               </p>
             </div>
           </div>
+
+          <AnimatePresence>
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-6 p-4 bg-danger/10 border-2 border-danger/20 rounded-2xl text-danger text-[10px] font-black uppercase tracking-widest text-center"
+              >
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">

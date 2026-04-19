@@ -36,6 +36,25 @@
   --radius-3xl: 2rem;
 }
 
+.high-visibility {
+  --font-size-xs: 0.875rem; 
+  --font-size-sm: 1rem;    
+  --font-size-base: 1.125rem; 
+  --font-size-lg: 1.25rem;    
+}
+
+.high-visibility body {
+  font-size: 1.125rem;
+}
+
+.high-visibility * {
+  letter-spacing: 0.02em !important;
+  font-weight: 600 !important;
+}
+
+.high-visibility h1 { font-size: 3.5rem !important; }
+.high-visibility h2 { font-size: 2.5rem !important; }
+
 @keyframes scan {
   0% { top: 0%; opacity: 0; }
   50% { opacity: 1; }

@@ -7,6 +7,8 @@ import StaffDashboard from './pages/StaffDashboard';
 import AttendeeTicket from './pages/attendee/Ticket';
 import AttendeeDining from './pages/attendee/Dining';
 import AttendeeSettings from './pages/attendee/Settings';
+import TestingDashboard from './pages/TestingDashboard';
+import SecurityPanel from './pages/SecurityPanel';
 import StaffAlerts from './pages/staff/Alerts';
 import StaffAnnouncements from './pages/staff/Announcements';
 import { ReactNode, useEffect } from 'react';
@@ -70,6 +72,8 @@ export default function App() {
             </ProtectedRoute>
           } 
         />
+        <Route path="/testing" element={<TestingDashboard />} />
+        <Route path="/security" element={<SecurityPanel />} />
         
         <Route 
           path="/staff/dashboard" 

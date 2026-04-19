@@ -16,7 +16,12 @@ import {
   Camera,
   ChevronRight,
   TrendingUp,
-  Users
+  Users,
+  Activity,
+  Shield,
+  Sparkles,
+  Mic,
+  Volume2
 } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { useNavigate } from 'react-router-dom';
@@ -40,10 +45,74 @@ const alerts = [
   { title: 'Halftime Special', body: '20% off at Section 108.', type: 'info' },
 ];
 
+const translations: Record<string, Record<string, string>> = {
+  EN: {
+    dashboard: "Dashboard",
+    ar_nav: "AR Navigation",
+    tickets: "My Tickets",
+    dining: "Dining",
+    settings: "App Settings",
+    test: "System Test",
+    security: "Security Ops",
+    welcome: "Namaste",
+    navigate: "Navigate Smarter, Skip the Crowd",
+    insights: "Live Insights",
+    density: "Crowd Density",
+    wait: "Est. Wait Time",
+    route: "Suggested Route",
+    start: "Start Navigation",
+    high: "High",
+    mins: "Mins"
+  },
+  HI: {
+    dashboard: "डैशबोर्ड",
+    ar_nav: "AR नेविगेशन",
+    tickets: "टिकट",
+    dining: "भोजन",
+    settings: "ऐप सेटिंग्स",
+    test: "सिस्टम टेस्ट",
+    security: "सुरक्षा",
+    welcome: "नमस्ते",
+    navigate: "स्मार्ट नेविगेट करें, भीड़ से बचें",
+    insights: "लाइव इनसाइट्स",
+    density: "भीड़ का घनत्व",
+    wait: "अनुमानित समय",
+    route: "सुझाया गया रास्ता",
+    start: "नेविगेशन शुरू करें",
+    high: "उच्च",
+    mins: "मिनट"
+  }
+};
+
 export default function AttendeeDashboard() {
-  const { user, logout, setSelectedRoute } = useStore();
+  const { user, logout, setSelectedRoute, language, setLanguage, highVisibility } = useStore();
   const navigate = useNavigate();
+  const t = translations[language] || translations.EN;
   const [isSOSActive, setIsSOSActive] = useState(false);
+  const [isVoiceOverlayOpen, setIsVoiceOverlayOpen] = useState(false);
+  const [voiceText, setVoiceText] = useState("");
+
+  const handleVoiceCommand = () => {
+    setIsVoiceOverlayOpen(true);
+    setVoiceText("Listening...");
+    setTimeout(() => {
+      setVoiceText("Navigating to Gate B");
+      setTimeout(() => {
+        setIsVoiceOverlayOpen(false);
+        setIsLiveViewActive(true);
+      }, 1500);
+    }, 2000);
+  };
+
+  const readScreen = () => {
+    if ('speechSynthesis' in window) {
+      const text = language === 'EN' ? "Welcome to CrowdSense AI dashboard" : "क्राउड सेंस एआई डैशबोर्ड में आपका स्वागत है";
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   const [isLiveViewActive, setIsLiveViewActive] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -118,6 +187,26 @@ export default function AttendeeDashboard() {
           <span className="font-heading font-black tracking-tighter text-xl text-foreground">CROWDSENSE <span className="text-accent">AI</span></span>
         </div>
         <div className="flex items-center gap-4 lg:gap-6">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={readScreen}
+            className="w-10 h-10 rounded-full bg-muted/30 border border-border flex items-center justify-center text-foreground hover:text-primary transition-all shadow-sm"
+            title="Read Screen"
+          >
+            <Volume2 className="w-5 h-5" />
+          </motion.button>
+          <div className="flex bg-muted/30 rounded-full p-1 border border-border">
+            {['EN', 'HI'].map((lang) => (
+              <button
+                key={lang}
+                onClick={() => setLanguage(lang as 'EN' | 'HI')}
+                className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${language === lang ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-foreground'}`}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
           <ThemeToggle />
           <div className="flex items-center gap-3 bg-muted/30 p-1.5 pl-4 rounded-full border border-border">
             <span className="text-[10px] font-black uppercase tracking-[0.2em] hidden sm:block text-foreground">Attendee</span>
@@ -160,23 +249,32 @@ export default function AttendeeDashboard() {
           <div className="flex flex-col gap-3">
              <div className="nav-item-geom active shadow-lg scale-[1.02]">
                 <LayoutDashboard className="w-5 h-5 mx-2 text-white" />
-                <span className="text-sm font-black uppercase tracking-widest text-white tracking-widest">Dashboard</span>
+                <span className="text-sm font-black uppercase tracking-widest text-white tracking-widest">{t.dashboard}</span>
              </div>
              <div onClick={() => setIsLiveViewActive(true)} className="nav-item-geom text-foreground hover:text-accent transition-all group">
                 <Camera className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
-                <span className="text-sm font-black uppercase tracking-widest text-foreground">AR Navigation</span>
+                <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.ar_nav}</span>
              </div>
              <div onClick={() => navigate('/attendee/ticket')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
                 <Ticket className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
-                <span className="text-sm font-black uppercase tracking-widest text-foreground">My Tickets</span>
+                <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.tickets}</span>
              </div>
              <div onClick={() => navigate('/attendee/dining')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
                 <Utensils className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
-                <span className="text-sm font-black uppercase tracking-widest text-foreground">Dining</span>
+                <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.dining}</span>
              </div>
              <div onClick={() => navigate('/attendee/settings')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
                 <Settings className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
-                <span className="text-sm font-black uppercase tracking-widest text-foreground">App Settings</span>
+                <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.settings}</span>
+             </div>
+             <div className="h-px bg-border my-2 opacity-50" />
+             <div onClick={() => navigate('/testing')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
+                <Activity className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
+                <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.test}</span>
+             </div>
+             <div onClick={() => navigate('/security')} className="nav-item-geom text-foreground hover:text-primary transition-all group">
+                <Shield className="w-5 h-5 mx-2 group-hover:rotate-12 transition-transform text-current" />
+                <span className="text-sm font-black uppercase tracking-widest text-foreground">{t.security}</span>
              </div>
           </div>
         </section>
@@ -190,9 +288,9 @@ export default function AttendeeDashboard() {
                animate={{ opacity: 1, x: 0 }}
                className="text-4xl lg:text-5xl font-heading font-black tracking-tighter leading-[0.9] text-foreground"
              >
-                NAMASTE, <br/> {user?.displayName?.split(' ')[0] || 'VIKRAM'}! 🇮🇳
+                {t.welcome}, <br/> {user?.displayName?.split(' ')[0] || 'VIKRAM'}! 🇮🇳
              </motion.h1>
-             <p className="text-foreground font-black uppercase tracking-[0.2em] text-xs">Navigate smarter. Skip the crowd.</p>
+             <p className="text-foreground font-black uppercase tracking-[0.2em] text-xs">{t.navigate}</p>
              
              {/* Dynamic Status Badges */}
              <div className="flex gap-4 mt-4">
@@ -246,6 +344,30 @@ export default function AttendeeDashboard() {
 
         {/* Right: Navigation & Alerts */}
         <section className="hidden xl:flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
+          <div className="bg-surface rounded-[2.5rem] border border-border p-8 shadow-xl relative overflow-hidden">
+             <div className="absolute top-0 left-0 w-full h-1 bg-accent" />
+             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground mb-6 flex items-center gap-2">
+                <Sparkles className="w-3 h-3 text-primary" /> {t.insights}
+             </h3>
+             <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                   <span className="text-[10px] font-black uppercase tracking-widest opacity-50">{t.density}</span>
+                   <span className="px-3 py-1 bg-danger/10 text-danger rounded-full text-[9px] font-black uppercase tracking-widest">{t.high}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                   <span className="text-[10px] font-black uppercase tracking-widest opacity-50">{t.wait}</span>
+                   <span className="text-sm font-black tracking-tighter uppercase">6 {t.mins}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                   <span className="text-[10px] font-black uppercase tracking-widest opacity-50">{t.route}</span>
+                   <span className="text-sm font-black tracking-tighter text-primary uppercase">Gate B</span>
+                </div>
+             </div>
+             <button onClick={() => setIsLiveViewActive(true)} className="w-full mt-6 py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2">
+                {t.start} <ChevronRight className="w-3 h-3" />
+             </button>
+          </div>
+
           <NavigationPanel />
 
           <div className="bg-surface rounded-[2.5rem] border border-border p-8 shadow-xl">
@@ -287,6 +409,40 @@ export default function AttendeeDashboard() {
 
       {/* Chatbot */}
       <Chatbot />
+
+      {/* Accessibility Floating Mic */}
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={handleVoiceCommand}
+        className="fixed bottom-24 right-6 lg:bottom-28 lg:right-10 w-16 h-16 bg-accent text-white rounded-full shadow-2xl flex items-center justify-center z-[90] border-4 border-background"
+        title="Voice Command"
+      >
+        <Mic className="w-7 h-7" />
+      </motion.button>
+
+      {/* Voice Overlay */}
+      <AnimatePresence>
+        {isVoiceOverlayOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1000] bg-primary/95 backdrop-blur-xl flex flex-col items-center justify-center text-white p-10 text-center"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="w-40 h-40 bg-white/20 rounded-full flex items-center justify-center mb-12 border-4 border-white/40 shadow-[0_0_60px_rgba(255,255,255,0.3)]"
+            >
+              <Mic className="w-20 h-20 text-white" />
+            </motion.div>
+            <h2 className="text-4xl lg:text-6xl font-heading font-black uppercase tracking-widest animate-pulse leading-tight">
+              {voiceText}
+            </h2>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile Navigation (Floating bottom) */}
       <nav className="fixed bottom-6 left-6 right-6 h-20 bg-surface/80 backdrop-blur-2xl border border-border rounded-[2.5rem] flex items-center justify-around lg:hidden z-50 shadow-2xl px-6 border-t-2 border-white/10">

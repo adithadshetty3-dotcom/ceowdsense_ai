@@ -7,6 +7,13 @@ export const useStore = create<AppState>((set) => ({
   theme: 'light',
   selectedZone: null,
   selectedRoute: null,
+  language: 'EN',
+  highVisibility: false,
+  setLanguage: (language) => set({ language }),
+  setHighVisibility: (highVisibility) => {
+    document.documentElement.classList.toggle('high-visibility', highVisibility);
+    set({ highVisibility });
+  },
   login: (user) => set({ user, isAuthReady: true }),
   logout: () => set({ user: null, isAuthReady: true, selectedZone: null, selectedRoute: null }),
   setRole: (role: UserRole) => set((state) => ({

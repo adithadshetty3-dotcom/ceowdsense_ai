@@ -23,6 +23,10 @@ export interface AppState {
   theme: Theme;
   selectedZone: CrowdZone | null;
   selectedRoute: string[] | null;
+  language: 'EN' | 'HI';
+  highVisibility: boolean;
+  setLanguage: (lang: 'EN' | 'HI') => void;
+  setHighVisibility: (active: boolean) => void;
   login: (user: UserProfile) => void;
   logout: () => void;
   setRole: (role: UserRole) => void;
