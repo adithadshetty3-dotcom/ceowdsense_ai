@@ -11,7 +11,7 @@ export default function TicketPage() {
       <header className="flex justify-between items-center mb-8 max-w-2xl mx-auto">
         <button 
           onClick={() => navigate('/attendee/dashboard')}
-          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-900 dark:text-white hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Stadium
         </button>
@@ -24,8 +24,8 @@ export default function TicketPage() {
         className="max-w-md mx-auto"
       >
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-heading font-black tracking-tighter uppercase mb-2">My Ticket</h1>
-          <p className="text-xs text-muted-foreground font-black uppercase tracking-[0.2em]">IPL 2026 · Mumbai Indians vs GT</p>
+          <h1 className="text-4xl font-heading font-black tracking-tighter uppercase mb-2 text-gray-900 dark:text-white">My Ticket</h1>
+          <p className="text-xs text-gray-900 dark:text-white font-black uppercase tracking-[0.2em]">IPL 2026 · Mumbai Indians vs GT</p>
         </div>
 
         <div className="bg-surface border-4 border-foreground rounded-[3rem] overflow-hidden shadow-[20px_20px_0px_rgba(30,58,138,0.1)]">
@@ -33,19 +33,19 @@ export default function TicketPage() {
              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <TicketIcon className="w-8 h-8" />
              </div>
-             <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 mb-1">Gate A Entry</p>
+             <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-1">Gate A Entry</p>
              <h2 className="text-3xl font-heading font-black tracking-tighter">VIP SECTION 104</h2>
           </div>
           
           <div className="p-8 space-y-8">
             <div className="grid grid-cols-2 gap-8">
                <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Row</p>
-                  <p className="text-2xl font-black font-heading tracking-tight">D</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white">Row</p>
+                  <p className="text-2xl font-black font-heading tracking-tight text-gray-900 dark:text-white">D</p>
                </div>
                <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Seat</p>
-                  <p className="text-2xl font-black font-heading tracking-tight">42</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white">Seat</p>
+                  <p className="text-2xl font-black font-heading tracking-tight text-gray-900 dark:text-white">42</p>
                </div>
             </div>
 
@@ -53,7 +53,7 @@ export default function TicketPage() {
                <div className="bg-white p-4 rounded-2xl mb-4">
                   <QrCode className="w-40 h-40 text-black" />
                </div>
-               <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Scan at Gate A Turnstile</p>
+               <p className="text-[9px] font-black uppercase tracking-widest text-gray-900 dark:text-white">Scan at Gate A Turnstile</p>
             </div>
 
             <button 

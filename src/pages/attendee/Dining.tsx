@@ -20,7 +20,7 @@ export default function DiningPage() {
       <header className="flex justify-between items-center mb-8 max-w-4xl mx-auto">
         <button 
           onClick={() => navigate('/attendee/dashboard')}
-          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-900 dark:text-white hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Dashboard
         </button>
@@ -30,13 +30,13 @@ export default function DiningPage() {
       <main className="max-w-4xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-5xl font-heading font-black tracking-tighter uppercase mb-2">Stadium Dining</h1>
-            <p className="text-xs text-muted-foreground font-black uppercase tracking-[0.2em]">Quick Bites · Pre-order & Skip the Queue</p>
+            <h1 className="text-5xl font-heading font-black tracking-tighter uppercase mb-2 text-gray-900 dark:text-white">Stadium Dining</h1>
+            <p className="text-xs text-gray-900 dark:text-white font-black uppercase tracking-[0.2em]">Quick Bites · Pre-order & Skip the Queue</p>
           </div>
           <div className="flex gap-4">
              <div className="bg-surface border border-border px-5 py-3 rounded-2xl flex items-center gap-3">
                 <Timer className="w-4 h-4 text-accent" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Avg. Wait: 12m</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white">Avg. Wait: 12m</span>
              </div>
           </div>
         </div>
@@ -53,7 +53,7 @@ export default function DiningPage() {
                </div>
                <div>
                   <h4 className="font-black uppercase tracking-tighter text-lg">Order Received!</h4>
-                  <p className="text-xs font-bold opacity-80 uppercase tracking-widest">Order ready in 5 mins at Counter 4</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-white">Order ready in 5 mins at Counter 4</p>
                </div>
             </div>
             <button onClick={() => setOrdered(false)} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Dismiss</button>
@@ -77,7 +77,7 @@ export default function DiningPage() {
                     <Star className="w-3 h-3 text-warning fill-warning" />
                     <span className="text-[10px] font-black text-warning">{item.rating}</span>
                  </div>
-                 <h3 className="text-lg font-black font-heading tracking-tight uppercase truncate text-foreground">{item.name}</h3>
+                 <h3 className="text-lg font-black font-heading tracking-tight uppercase truncate text-gray-900 dark:text-white">{item.name}</h3>
                  <p className="text-accent font-black text-xl mb-3">{item.price}</p>
                  <button 
                    onClick={() => setOrdered(true)}

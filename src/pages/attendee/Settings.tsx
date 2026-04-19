@@ -13,7 +13,7 @@ export default function SettingsPage() {
       <header className="flex justify-between items-center mb-8 max-w-2xl mx-auto">
         <button 
           onClick={() => navigate('/attendee/dashboard')}
-          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-900 dark:text-white hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
@@ -26,8 +26,8 @@ export default function SettingsPage() {
         className="max-w-xl mx-auto"
       >
         <div className="mb-10">
-          <h1 className="text-5xl font-heading font-black tracking-tighter uppercase mb-2 text-foreground">App Settings</h1>
-          <p className="text-xs text-muted-foreground font-black uppercase tracking-[0.2em]">Configure your CrowdSense Experience</p>
+          <h1 className="text-5xl font-heading font-black tracking-tighter uppercase mb-2 text-gray-900 dark:text-white">App Settings</h1>
+          <p className="text-xs text-gray-900 dark:text-white font-black uppercase tracking-[0.2em]">Configure your CrowdSense Experience</p>
         </div>
 
         <div className="space-y-6">
@@ -38,8 +38,8 @@ export default function SettingsPage() {
                    {user?.photoURL ? <img src={user.photoURL} alt="User" referrerPolicy="no-referrer" /> : user?.displayName?.split(' ').map(n => n[0]).join('') || 'MJ'}
                 </div>
                 <div>
-                   <h2 className="text-2xl font-black font-heading tracking-tighter uppercase text-foreground">{user?.displayName || 'Marcus Johnson'}</h2>
-                   <p className="text-xs text-muted-foreground font-bold">{user?.email || 'marcus@example.com'}</p>
+                   <h2 className="text-2xl font-black font-heading tracking-tighter uppercase text-gray-900 dark:text-white">{user?.displayName || 'Marcus Johnson'}</h2>
+                   <p className="text-xs text-gray-900 dark:text-white font-bold">{user?.email || 'marcus@example.com'}</p>
                 </div>
              </div>
              
@@ -56,7 +56,7 @@ export default function SettingsPage() {
 
           {/* Preferences Section */}
           <section className="bg-surface border border-border rounded-[2.5rem] p-8 shadow-xl space-y-6">
-             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">Preferences</h3>
+             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-900 dark:text-white mb-4">Preferences</h3>
              
              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -64,8 +64,8 @@ export default function SettingsPage() {
                       <Bell className="w-5 h-5 text-primary" />
                    </div>
                    <div>
-                      <p className="text-sm font-black uppercase tracking-tight text-foreground">Smart Alerts</p>
-                      <p className="text-[10px] text-muted-foreground font-bold">Crowd density & event updates</p>
+                      <p className="text-sm font-black uppercase tracking-tight text-gray-900 dark:text-white">Smart Alerts</p>
+                      <p className="text-[10px] text-gray-900 dark:text-white font-bold">Crowd density & event updates</p>
                    </div>
                 </div>
                 <div className="w-12 h-6 bg-accent rounded-full relative p-1 cursor-pointer">
@@ -79,8 +79,8 @@ export default function SettingsPage() {
                       <Shield className="w-5 h-5 text-primary" />
                    </div>
                    <div>
-                      <p className="text-sm font-black uppercase tracking-tight text-foreground">Emergency Sharing</p>
-                      <p className="text-[10px] text-muted-foreground font-bold">Share location with medical staff</p>
+                      <p className="text-sm font-black uppercase tracking-tight text-gray-900 dark:text-white">Emergency Sharing</p>
+                      <p className="text-[10px] text-gray-900 dark:text-white font-bold">Share location with medical staff</p>
                    </div>
                 </div>
                 <div className="w-12 h-6 bg-accent rounded-full relative p-1 cursor-pointer">
@@ -94,8 +94,8 @@ export default function SettingsPage() {
                       <Moon className="w-5 h-5 text-primary" />
                    </div>
                    <div>
-                      <p className="text-sm font-black uppercase tracking-tight text-foreground">Theme Settings</p>
-                      <p className="text-[10px] text-muted-foreground font-bold">Switch between Light/Dark mode</p>
+                      <p className="text-sm font-black uppercase tracking-tight text-gray-900 dark:text-white">Theme Settings</p>
+                      <p className="text-[10px] text-gray-900 dark:text-white font-bold">Switch between Light/Dark mode</p>
                    </div>
                 </div>
                 <ThemeToggle />

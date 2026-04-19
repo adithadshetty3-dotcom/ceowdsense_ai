@@ -25,7 +25,7 @@ export default function NavigationPanel() {
           </div>
           <div>
             <h3 className="text-xs font-black uppercase tracking-[0.2em]">Active Route</h3>
-            <p className="text-[9px] font-bold opacity-60 uppercase tracking-widest">To Section 104</p>
+            <p className="text-[9px] font-bold uppercase tracking-widest">To Section 104</p>
           </div>
         </div>
         <button onClick={() => setSelectedRoute(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors">

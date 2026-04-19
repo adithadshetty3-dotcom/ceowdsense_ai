@@ -26,7 +26,7 @@ export default function StaffAnnouncements() {
       <header className="flex justify-between items-center mb-10 max-w-5xl mx-auto">
         <button 
           onClick={() => navigate('/staff/dashboard')}
-          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-900 dark:text-white hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Exit Broadcaster
         </button>
@@ -36,7 +36,7 @@ export default function StaffAnnouncements() {
       <main className="max-w-4xl mx-auto">
         <div className="mb-12">
           <h1 className="text-5xl font-heading font-black tracking-tighter uppercase mb-2 text-foreground">Venue Broadcaster</h1>
-          <p className="text-xs text-muted-foreground font-black uppercase tracking-[0.2em]">Send instantaneous updates to the stadium crowd</p>
+          <p className="text-xs text-gray-900 dark:text-white font-black uppercase tracking-[0.2em]">Send instantaneous updates to the stadium crowd</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -54,15 +54,15 @@ export default function StaffAnnouncements() {
                     value={msg}
                     onChange={(e) => setMsg(e.target.value)}
                     placeholder="Type stadium announcement here..."
-                    className="w-full h-40 bg-muted/30 border-2 border-border rounded-[2rem] p-6 text-sm font-medium focus:border-primary focus:outline-none transition-all placeholder:text-muted-foreground/50 resize-none text-foreground"
+                    className="w-full h-40 bg-muted/30 border-2 border-border rounded-[2rem] p-6 text-sm font-medium focus:border-primary focus:outline-none transition-all placeholder:text-gray-900 dark:placeholder:text-white resize-none text-foreground"
                  />
 
                  <div className="mt-6 space-y-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Target Audience</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white ml-2">Target Audience</p>
                     <div className="flex flex-wrap gap-2">
                        <button className="px-5 py-2 rounded-full border-2 border-primary bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">Global</button>
-                       <button className="px-5 py-2 rounded-full border-2 border-border bg-transparent text-muted-foreground text-[10px] font-black uppercase tracking-widest hover:border-primary transition-colors">Gate A Only</button>
-                       <button className="px-5 py-2 rounded-full border-2 border-border bg-transparent text-muted-foreground text-[10px] font-black uppercase tracking-widest hover:border-primary transition-colors">VIP Lounges</button>
+                       <button className="px-5 py-2 rounded-full border-2 border-border bg-transparent text-gray-900 dark:text-white text-[10px] font-black uppercase tracking-widest hover:border-primary transition-colors">Gate A Only</button>
+                       <button className="px-5 py-2 rounded-full border-2 border-border bg-transparent text-gray-900 dark:text-white text-[10px] font-black uppercase tracking-widest hover:border-primary transition-colors">VIP Lounges</button>
                     </div>
                  </div>
 
@@ -88,8 +88,8 @@ export default function StaffAnnouncements() {
            {/* History Section */}
            <section className="space-y-6">
               <div className="flex items-center gap-3 mb-4">
-                 <History className="w-4 h-4 text-muted-foreground" />
-                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Recent Activity</h3>
+                 <History className="w-4 h-4 text-gray-900 dark:text-white" />
+                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-900 dark:text-white">Recent Activity</h3>
               </div>
 
               <div className="space-y-4">
@@ -103,7 +103,7 @@ export default function StaffAnnouncements() {
                    >
                      <div className="flex justify-between items-start mb-3">
                         <span className="text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary px-3 py-1 rounded-full">{b.recipients}</span>
-                        <span className="text-[9px] font-bold text-muted-foreground">{b.time}</span>
+                        <span className="text-[9px] font-bold text-gray-900 dark:text-white">{b.time}</span>
                      </div>
                      <p className="text-sm font-medium leading-relaxed italic text-foreground">"{b.text}"</p>
                    </motion.div>
@@ -111,7 +111,7 @@ export default function StaffAnnouncements() {
               </div>
 
               <div className="bg-muted/30 p-8 rounded-[2rem] border-2 border-dashed border-border text-center">
-                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">End of History</p>
+                 <p className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest">End of History</p>
               </div>
            </section>
         </div>

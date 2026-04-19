@@ -54,9 +54,9 @@ export default function Login() {
       <div className="absolute top-8 left-8 z-50">
         <button 
           onClick={() => navigate('/')} 
-          className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-colors"
+          className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-foreground hover:text-primary transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4 text-current" /> Back
         </button>
       </div>
       
@@ -84,24 +84,24 @@ export default function Login() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-muted-foreground ml-1">Email ID</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-foreground ml-1">Email ID</label>
               <Input 
                 type="email" 
                 placeholder="Enter your email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-16 bg-muted/30 border-2 border-border rounded-2xl focus:border-primary transition-all text-foreground font-bold px-6"
+                className="h-16 bg-muted/30 border-2 border-border rounded-2xl focus:border-primary transition-all text-foreground font-bold px-6 placeholder:text-muted-foreground"
                 required
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-muted-foreground ml-1">Secret Key</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-foreground ml-1">Secret Key</label>
               <Input 
                 type="password" 
                 placeholder="••••••••" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-16 bg-muted/30 border-2 border-border rounded-2xl focus:border-primary transition-all text-foreground font-bold px-6"
+                className="h-16 bg-muted/30 border-2 border-border rounded-2xl focus:border-primary transition-all text-foreground font-bold px-6 placeholder:text-muted-foreground"
                 required
               />
             </div>
@@ -119,7 +119,7 @@ export default function Login() {
               <div className="w-full border-t-2 border-border"></div>
             </div>
             <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.4em]">
-              <span className="bg-surface px-4 text-muted-foreground">OR</span>
+              <span className="bg-surface px-4 text-foreground">OR</span>
             </div>
           </div>
 
@@ -133,7 +133,7 @@ export default function Login() {
           </Button>
         </div>
         
-        <p className="text-center mt-10 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground opacity-50">
+        <p className="text-center mt-10 text-[10px] font-black uppercase tracking-[0.3em] text-foreground">
           Powered by CrowdSense Intelligence Engine
         </p>
       </motion.div>

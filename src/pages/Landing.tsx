@@ -48,7 +48,7 @@ export default function Landing() {
           </h1>
           <div className="flex items-center justify-center gap-3">
             <span className="h-[2px] w-8 bg-border" />
-            <p className="text-muted-foreground font-black uppercase tracking-[0.4em] text-[10px] lg:text-xs">
+            <p className="text-foreground font-black uppercase tracking-[0.4em] text-[10px] lg:text-xs">
               Smarter Stadium Navigation
             </p>
             <span className="h-[2px] w-8 bg-border" />
@@ -75,8 +75,8 @@ export default function Landing() {
           </motion.div>
         </div>
 
-        <div className="mt-16 flex items-center justify-center gap-8 opacity-40 grayscale group hover:grayscale-0 transition-all">
-           <p className="text-[10px] font-black uppercase tracking-[0.3em]">Official Partner: IPL 2026 🇮🇳</p>
+        <div className="mt-16 flex items-center justify-center gap-8 group hover:grayscale-0 transition-all opacity-80 dark:opacity-100">
+           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground">Official Partner: IPL 2026 🇮🇳</p>
         </div>
       </motion.div>
     </div>

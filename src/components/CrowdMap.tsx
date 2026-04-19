@@ -31,7 +31,7 @@ export default function CrowdMap() {
             <span className="text-4xl filter drop-shadow-md">{zone.symbol}</span>
             <div className="text-center">
               <div className="text-xs font-black uppercase tracking-widest leading-none mb-1">{zone.name}</div>
-              <div className="text-[10px] font-bold opacity-75">{zone.people} PEOPLE</div>
+              <div className="text-[10px] font-bold">{zone.people} PEOPLE</div>
             </div>
             
             {zone.density === 'high' && (
@@ -49,7 +49,7 @@ export default function CrowdMap() {
           <div className="flex justify-between items-center">
             <div>
               <h4 className="text-sm font-bold uppercase">{selectedZone.name}</h4>
-              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Crowd Density: {selectedZone.density}</p>
+              <p className="text-[10px] text-gray-900 dark:text-white uppercase font-bold tracking-wider">Crowd Density: {selectedZone.density}</p>
             </div>
             <button 
               onClick={() => setSelectedZone(null)}

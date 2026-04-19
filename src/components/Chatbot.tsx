@@ -94,7 +94,7 @@ export default function Chatbot() {
                   <h3 className="font-heading font-black text-xl leading-tight tracking-tighter uppercase">CrowdSense AI</h3>
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-                    <p className="text-[10px] uppercase font-black tracking-widest opacity-80">Online · Smart Support</p>
+                    <p className="text-[10px] uppercase font-black tracking-widest">Online · Smart Support</p>
                   </div>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export default function Chatbot() {
                   <Send className="w-5 h-5 pl-0.5" />
                 </motion.button>
               </div>
-              <p className="text-[10px] text-muted-foreground mt-3 text-center uppercase font-black tracking-widest opacity-50 italic">AI-Powered Stadium Assistant</p>
+              <p className="text-[10px] text-gray-900 dark:text-white mt-3 text-center uppercase font-black tracking-widest italic">AI-Powered Stadium Assistant</p>
             </div>
           </motion.div>
         )}

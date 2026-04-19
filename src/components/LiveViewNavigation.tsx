@@ -20,18 +20,41 @@ export default function LiveViewNavigation({ onClose }: LiveViewNavigationProps)
   const [stream, setStream] = useState<MediaStream | null>(null);
   const { selectedRoute } = useStore();
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
+    let currentStream: MediaStream | null = null;
     async function setupCamera() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setError("Camera API is not supported in this browser or environment (requires HTTPS).");
+        return;
+      }
       try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'environment' } 
-        });
+        // Try back camera first
+        let mediaStream: MediaStream;
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: { ideal: 'environment' } } 
+          });
+        } catch (e) {
+          // Fallback to any camera
+          mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        }
+
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
         }
         setStream(mediaStream);
+        currentStream = mediaStream;
+        setError(null);
       } catch (err) {
         console.error("Camera access denied:", err);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        if (errorMessage.includes("Permission denied") || errorMessage.includes("NotAllowedError")) {
+          setError("Camera permission was denied. Please click the camera icon in your browser's address bar to allow access for this site.");
+        } else {
+          setError(`Camera Error: ${errorMessage}. Please ensure your device has a working camera.`);
+        }
       }
     }
 
@@ -42,8 +65,8 @@ export default function LiveViewNavigation({ onClose }: LiveViewNavigationProps)
     }, 5000);
 
     return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
       }
       clearInterval(interval);
     };
@@ -77,36 +100,56 @@ export default function LiveViewNavigation({ onClose }: LiveViewNavigationProps)
           </button>
         </div>
 
-        {/* Center Arrow */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0, scale: 0.5, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.5, y: -20 }}
-            className="flex flex-col items-center gap-6"
+        {error ? (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-danger/90 backdrop-blur-xl p-8 rounded-[2.5rem] border-2 border-white/20 max-w-sm text-center shadow-2xl"
           >
-            <div className="w-32 h-32 bg-accent/80 backdrop-blur-lg rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(34,197,94,0.5)] border-4 border-white/30">
-              {step.direction === 'straight' && <ArrowUp className="w-16 h-16 text-white animate-bounce" />}
-              {step.direction === 'right' && <ArrowRight className="w-16 h-16 text-white animate-pulse" />}
-              {step.direction === 'left' && <ArrowLeft className="w-16 h-16 text-white animate-pulse" />}
-            </div>
-            
-            <div className="bg-black/60 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-accent/40 shadow-2xl max-w-[300px] text-center">
-              <p className="text-white text-lg font-black uppercase tracking-tight leading-none mb-1">
-                {step.text}
-              </p>
-              <div className="h-1 bg-white/20 rounded-full w-full overflow-hidden mt-3">
-                 <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 5, ease: "linear" }}
-                    className="h-full bg-accent" 
-                 />
-              </div>
-            </div>
+            <AlertTriangle className="w-16 h-16 text-white mx-auto mb-6" />
+            <h3 className="text-white text-xl font-black uppercase tracking-tight mb-4">Camera Error</h3>
+            <p className="text-white text-sm font-bold leading-relaxed mb-6">
+              {error}
+            </p>
+            <button 
+              onClick={onClose}
+              className="w-full py-4 bg-white text-danger rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all"
+            >
+              Go Back
+            </button>
           </motion.div>
-        </AnimatePresence>
+        ) : (
+          /* AR Navigation Content (Arrows, etc.) */
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, scale: 0.5, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.5, y: -20 }}
+              className="flex flex-col items-center gap-6"
+            >
+              <div className="w-32 h-32 bg-accent/80 backdrop-blur-lg rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(34,197,94,0.5)] border-4 border-white/30">
+                {step.direction === 'straight' && <ArrowUp className="w-16 h-16 text-white animate-bounce" />}
+                {step.direction === 'right' && <ArrowRight className="w-16 h-16 text-white animate-pulse" />}
+                {step.direction === 'left' && <ArrowLeft className="w-16 h-16 text-white animate-pulse" />}
+              </div>
+              
+              <div className="bg-black/60 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-accent/40 shadow-2xl max-w-[300px] text-center">
+                <p className="text-white text-lg font-black uppercase tracking-tight leading-none mb-1">
+                  {step.text}
+                </p>
+                <div className="h-1 bg-white/20 rounded-full w-full overflow-hidden mt-3">
+                   <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 5, ease: "linear" }}
+                      className="h-full bg-accent" 
+                   />
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        )}
 
         {/* Alerts / Footer */}
         <div className="w-full flex flex-col items-center gap-4">

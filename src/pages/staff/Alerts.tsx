@@ -17,7 +17,7 @@ export default function StaffAlerts() {
       <header className="flex justify-between items-center mb-10 max-w-5xl mx-auto">
         <button 
           onClick={() => navigate('/staff/dashboard')}
-          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+          className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-900 dark:text-white hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Operations Dashboard
         </button>
@@ -31,7 +31,7 @@ export default function StaffAlerts() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
           <div>
             <h1 className="text-5xl font-heading font-black tracking-tighter uppercase mb-2 text-foreground">Operational Alerts</h1>
-            <p className="text-xs text-muted-foreground font-black uppercase tracking-[0.2em]">Manage and Resolve Stadium Incidents</p>
+            <p className="text-xs text-gray-900 dark:text-white font-black uppercase tracking-[0.2em]">Manage and Resolve Stadium Incidents</p>
           </div>
           <div className="flex gap-4">
              <button className="flex items-center gap-2 px-6 py-3 bg-muted rounded-2xl text-[10px] font-black uppercase tracking-widest text-foreground hover:bg-muted/80 transition-all border border-border">
@@ -69,8 +69,8 @@ export default function StaffAlerts() {
                           {alert.status}
                        </span>
                     </div>
-                    <p className="text-sm text-neutral-500 font-medium leading-relaxed max-w-xl">{alert.body}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-2 opacity-60">{alert.time}</p>
+                    <p className="text-sm text-gray-900 dark:text-white font-black leading-relaxed max-w-xl">{alert.body}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white mt-2">{alert.time}</p>
                   </div>
                </div>
                
