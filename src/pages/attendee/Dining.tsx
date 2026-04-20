@@ -1,8 +1,9 @@
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Utensils, Timer, Star, Plus } from 'lucide-react';
+import { ArrowLeft, Utensils, Timer, Star, Plus, MapPin } from 'lucide-react';
 import ThemeToggle from '../../components/ThemeToggle';
 import { useState } from 'react';
+import { useStore } from '../../lib/store';
 
 const menuItems = [
   { id: 1, name: 'Mumbai Vada Pav', price: '₹99', rating: 4.8, img: 'https://picsum.photos/seed/vadapav/200/200' },
