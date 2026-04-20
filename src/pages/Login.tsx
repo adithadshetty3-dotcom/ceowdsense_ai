@@ -115,8 +115,9 @@ export default function Login() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-foreground ml-1">Email ID</label>
+              <label htmlFor="email" className="text-[10px] uppercase tracking-[0.3em] font-black text-foreground ml-1">Email ID</label>
               <Input 
+                id="email"
                 type="email" 
                 placeholder="Enter your email" 
                 value={email}
@@ -126,8 +127,9 @@ export default function Login() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-foreground ml-1">Secret Key</label>
+              <label htmlFor="password" className="text-[10px] uppercase tracking-[0.3em] font-black text-foreground ml-1">Secret Key</label>
               <Input 
+                id="password"
                 type="password" 
                 placeholder="••••••••" 
                 value={password}

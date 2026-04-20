@@ -55,7 +55,7 @@ const initialIncidents: Incident[] = [
 ];
 
 export default function StaffDashboard() {
-  const { user, logout } = useStore();
+  const { user, logout, sosActive, setSosActive } = useStore();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<StaffOrder[]>(initialOrders);
   const [incidents, setIncidents] = useState<Incident[]>(initialIncidents);
@@ -79,6 +79,51 @@ export default function StaffDashboard() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#0A0B0E] text-[#E0E2E6] font-mono">
+      <AnimatePresence>
+        {sosActive && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-danger/20 backdrop-blur-sm"
+          >
+            <div className="bg-[#12141A] border-4 border-danger p-10 rounded-2xl max-w-md w-full shadow-[0_0_100px_rgba(220,38,38,0.3)] text-center">
+               <AlertCircle className="w-16 h-16 text-danger mx-auto mb-6 animate-bounce" />
+               <h2 className="text-2xl font-black uppercase tracking-tighter mb-2 text-danger">CRITICAL: SOS TRIGGERED</h2>
+               <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-8 text-[#626770]">Attendee at Section A12 needs immediate assistance</p>
+               
+               <div className="space-y-4 mb-8">
+                  <div className="flex justify-between items-center bg-[#0A0B0E] p-4 border border-[#1E2229] rounded">
+                     <span className="text-[10px] font-black uppercase text-[#626770]">Type</span>
+                     <span className="text-[10px] font-black uppercase text-white">Medical Emergency</span>
+                  </div>
+                  <div className="flex justify-between items-center bg-[#0A0B0E] p-4 border border-[#1E2229] rounded">
+                     <span className="text-[10px] font-black uppercase text-[#626770]">Location</span>
+                     <span className="text-[10px] font-black uppercase text-white">Gate 4 Entrance Area</span>
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-2 gap-4">
+                  <button 
+                    onClick={() => {
+                        // Dispatch internal signal logic
+                        setSosActive(false);
+                    }}
+                    className="py-4 bg-danger text-white text-[10px] font-black uppercase tracking-widest hover:bg-danger/80 transition-all"
+                  >
+                    Confirm Dispatch
+                  </button>
+                  <button 
+                    onClick={() => setSosActive(false)}
+                    className="py-4 border border-[#1E2229] text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#1E2229] transition-all"
+                  >
+                    Dismiss
+                  </button>
+               </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Technical Navigation Header */}
       <header className="h-16 px-6 flex justify-between items-center border-b border-[#1E2229] bg-[#0A0B0E]/95 backdrop-blur-md z-50">
         <div className="flex items-center gap-6">

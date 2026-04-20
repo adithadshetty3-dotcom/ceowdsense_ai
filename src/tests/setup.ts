@@ -16,3 +16,6 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
   disconnect() {}
 };
+
+// Mock scrollTo
+window.HTMLElement.prototype.scrollTo = vi.fn();

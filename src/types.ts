@@ -25,6 +25,8 @@ export interface AppState {
   selectedRoute: string[] | null;
   language: 'EN' | 'HI';
   highVisibility: boolean;
+  sosActive: boolean;
+  emergencyContacts: { name: string; phone: string; relationship: string }[];
   setLanguage: (lang: 'EN' | 'HI') => void;
   setHighVisibility: (active: boolean) => void;
   login: (user: UserProfile) => void;
@@ -33,4 +35,5 @@ export interface AppState {
   setTheme: (theme: Theme) => void;
   setSelectedZone: (zone: CrowdZone | null) => void;
   setSelectedRoute: (route: string[] | null) => void;
+  setSosActive: (active: boolean) => void;
 }

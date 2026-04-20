@@ -9,11 +9,17 @@ export const useStore = create<AppState>((set) => ({
   selectedRoute: null,
   language: 'EN',
   highVisibility: false,
+  sosActive: false,
+  emergencyContacts: [
+    { name: 'Dr. Aarav Mehta', phone: '+91 98XXX XXXXX', relationship: 'Medical Emergency' },
+    { name: 'Amita Shetty', phone: '+91 91XXX XXXXX', relationship: 'Family Member' },
+  ],
   setLanguage: (language) => set({ language }),
   setHighVisibility: (highVisibility) => {
     document.documentElement.classList.toggle('high-visibility', highVisibility);
     set({ highVisibility });
   },
+  setSosActive: (sosActive) => set({ sosActive }),
   login: (user) => set({ user, isAuthReady: true }),
   logout: () => set({ user: null, isAuthReady: true, selectedZone: null, selectedRoute: null }),
   setRole: (role: UserRole) => set((state) => ({

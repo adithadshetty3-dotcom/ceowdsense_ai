@@ -22,7 +22,10 @@ import {
   Sparkles,
   Mic,
   Volume2,
-  Cpu
+  Cpu,
+  Phone,
+  Heart,
+  Navigation
 } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { useNavigate } from 'react-router-dom';
@@ -34,6 +37,7 @@ import LiveViewNavigation from '../components/LiveViewNavigation';
 import { routes } from '../lib/dummy-data';
 import { useCrowdMetrics } from '../lib/efficiency';
 import { sanitizeInput } from '../lib/security';
+import { startSiren, stopSiren } from '../lib/sounds';
 
 const quickActions = [
   { id: 'camera', icon: Camera, label: 'AR Navigation', symbol: '📍', primary: true },
@@ -88,11 +92,10 @@ const translations: Record<string, Record<string, string>> = {
 };
 
 export default function AttendeeDashboard() {
-  const { user, logout, setSelectedRoute, language, setLanguage, highVisibility } = useStore();
+  const { user, logout, setSelectedRoute, language, setLanguage, highVisibility, sosActive, setSosActive, emergencyContacts } = useStore();
   const navigate = useNavigate();
   const t = translations[language] || translations.EN;
   const metrics = useCrowdMetrics(72); // Current stadium occupancy is 72%
-  const [isSOSActive, setIsSOSActive] = useState(false);
   const [isVoiceOverlayOpen, setIsVoiceOverlayOpen] = useState(false);
   const [voiceText, setVoiceText] = useState("");
 
@@ -149,23 +152,11 @@ export default function AttendeeDashboard() {
   };
 
   const [isLiveViewActive, setIsLiveViewActive] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleLogout = useCallback(() => {
     logout();
     navigate('/');
   }, [logout, navigate]);
-
-  const playSOS = useCallback(() => {
-    try {
-      if (!audioRef.current) {
-        audioRef.current = new Audio("/sounds/sos.mp3");
-      }
-      audioRef.current.play().catch(err => console.error("Sound play failed:", err));
-    } catch (e) {
-      console.error("SOS Sound error:", e);
-    }
-  }, []);
 
   const handleAction = (id: string) => {
     if (id === 'camera') setIsLiveViewActive(true);
@@ -173,10 +164,10 @@ export default function AttendeeDashboard() {
     if (id === 'restroom') setSelectedRoute(routes.restroom);
     if (id === 'food') navigate('/attendee/dining');
     if (id === 'emergency') {
-      setIsSOSActive(true);
-      playSOS();
+      setSosActive(true);
+      startSiren();
       if (typeof navigator !== 'undefined' && navigator.vibrate) {
-        navigator.vibrate(1000);
+        navigator.vibrate([500, 200, 500, 200, 500]);
       }
     }
   };
@@ -184,28 +175,99 @@ export default function AttendeeDashboard() {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background text-foreground transition-colors duration-500 relative selection:bg-accent/30 selection:text-accent-foreground dark:text-white">
       <AnimatePresence>
-        {isSOSActive && (
+        {sosActive && (
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0] }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, repeat: Infinity }}
-            className="fixed inset-0 bg-danger/80 z-[500] flex items-center justify-center p-6"
+            className="fixed inset-0 bg-danger/95 z-[500] flex items-center justify-center p-6 backdrop-blur-md overflow-y-auto"
           >
             <motion.div 
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              className="bg-background p-10 rounded-[3rem] shadow-2xl border-4 border-foreground text-center"
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-surface w-full max-w-2xl p-8 lg:p-12 rounded-[3.5rem] shadow-[0_0_50px_rgba(220,38,38,0.3)] border-4 border-danger"
             >
-              <AlertTriangle className="w-20 h-20 text-danger mx-auto mb-6 animate-bounce" />
-              <h2 className="text-4xl font-black uppercase tracking-tighter mb-4 text-foreground">Emergency Alert Triggered</h2>
-              <p className="text-foreground font-black mb-8 uppercase tracking-widest">Help is on the way. Stay calm.</p>
-              <button 
-                onClick={() => setIsSOSActive(false)}
-                className="bg-foreground text-background px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
-              >
-                Cancel Alert
-              </button>
+              <div className="flex flex-col items-center text-center">
+                <div className="w-24 h-24 bg-danger rounded-full flex items-center justify-center mb-6 animate-pulse shadow-[0_0_30px_rgba(220,38,38,0.5)]">
+                  <AlertTriangle className="w-12 h-12 text-white" />
+                </div>
+                
+                <h2 className="text-4xl lg:text-5xl font-heading font-black uppercase tracking-tighter mb-2 text-foreground leading-none">
+                  SOS Active
+                </h2>
+                <div className="flex items-center gap-2 mb-8">
+                   <div className="w-2 h-2 rounded-full bg-accent animate-ping" />
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-accent">Alerts Broadcasted Successfully</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full text-left mb-10">
+                   <div className="bg-muted/50 rounded-3xl p-6 border border-border">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Activity className="w-5 h-5 text-danger" />
+                        <span className="text-[11px] font-black uppercase tracking-widest text-foreground">Emergency Services</span>
+                      </div>
+                      <div className="space-y-3">
+                         <div className="flex justify-between items-center bg-surface p-3 rounded-xl border border-border shadow-sm transition-all hover:border-danger/30">
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Ambulance</span>
+                            <span className="text-[10px] font-black uppercase text-accent">DISPATCHED</span>
+                         </div>
+                         <div className="flex justify-between items-center bg-surface p-3 rounded-xl border border-border shadow-sm transition-all hover:border-danger/30">
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Medical Team</span>
+                            <span className="text-[10px] font-black uppercase text-primary">ARRIVING 4m</span>
+                         </div>
+                      </div>
+                   </div>
+
+                   <div className="bg-muted/50 rounded-3xl p-6 border border-border">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Heart className="w-5 h-5 text-accent" />
+                        <span className="text-[11px] font-black uppercase tracking-widest text-foreground">Family Contacts</span>
+                      </div>
+                      <div className="space-y-3">
+                         {emergencyContacts.map((contact, idx) => (
+                           <div key={idx} className="flex justify-between items-center bg-surface p-3 rounded-xl border border-border shadow-sm transition-all hover:border-accent/30">
+                              <div>
+                                <div className="text-[10px] font-black uppercase tracking-widest">{contact.name}</div>
+                                <div className="text-[8px] font-black uppercase tracking-[0.2em] opacity-40">{contact.relationship}</div>
+                              </div>
+                              <Phone className="w-3 h-3 text-accent" />
+                           </div>
+                         ))}
+                      </div>
+                   </div>
+                </div>
+
+                <div className="bg-primary/5 rounded-3xl p-8 w-full border border-primary/20 mb-10 text-left relative overflow-hidden">
+                   <Navigation className="absolute -right-4 -bottom-4 w-32 h-32 text-primary/5 -rotate-12" />
+                   <div className="relative z-10">
+                      <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary mb-4">Safety Suggestions</div>
+                      <ul className="space-y-3">
+                        <li className="flex gap-4 text-xs font-black uppercase tracking-widest text-foreground/80 leading-relaxed">
+                           <span className="text-primary font-black">01.</span>
+                           Move towards Medical Station 3 (Section 104)
+                        </li>
+                        <li className="flex gap-4 text-xs font-black uppercase tracking-widest text-foreground/80 leading-relaxed">
+                           <span className="text-primary font-black">02.</span>
+                           Stay in a well-lit area until staff arrives
+                        </li>
+                        <li className="flex gap-4 text-xs font-black uppercase tracking-widest text-foreground/80 leading-relaxed">
+                           <span className="text-primary font-black">03.</span>
+                           Keep this screen visible for security teams
+                        </li>
+                      </ul>
+                   </div>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    setSosActive(false);
+                    stopSiren();
+                  }}
+                  className="w-full h-20 bg-foreground text-background rounded-[2rem] font-black uppercase tracking-[0.4em] text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl flex items-center justify-center gap-4"
+                >
+                  <LogOut className="w-5 h-5" /> Deactivate SOS
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -222,6 +284,16 @@ export default function AttendeeDashboard() {
           <span className="font-heading font-black tracking-tighter text-xl text-foreground">CROWDSENSE <span className="text-accent">AI</span></span>
         </div>
         <div className="flex items-center gap-4 lg:gap-6">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => handleAction('emergency')}
+            className="h-10 px-4 rounded-full bg-danger text-white flex items-center gap-2 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-danger/20 hover:bg-danger/90 transition-all"
+            aria-label="Trigger SOS Emergency"
+          >
+            <AlertTriangle className="w-4 h-4" />
+            <span className="hidden sm:inline">SOS</span>
+          </motion.button>
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -262,6 +334,20 @@ export default function AttendeeDashboard() {
         
         {/* Left: Venue Stats & Profile */}
         <section aria-labelledby="venue-insight-title" className="hidden lg:flex flex-col gap-6">
+          {/* Emergency Quick Tool */}
+          <div className="bg-danger/5 border-2 border-danger/20 rounded-[2.5rem] p-6 text-center group hover:bg-danger/10 transition-all">
+             <div className="w-12 h-12 bg-danger rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-danger/20 group-hover:scale-110 transition-transform">
+                <AlertTriangle className="w-6 h-6 text-white" />
+             </div>
+             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-danger mb-2">Emergency Help</h4>
+             <button 
+               onClick={() => handleAction('emergency')}
+               className="w-full py-3 bg-danger text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-danger/10"
+             >
+                Trigger SOS
+             </button>
+          </div>
+
           <div className="bg-surface border border-border rounded-[2.5rem] p-8 shadow-xl relative overflow-hidden group">
              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
                 <Users className="w-24 h-24 text-foreground" />
@@ -516,6 +602,18 @@ export default function AttendeeDashboard() {
           <span className="text-[9px] font-black uppercase tracking-tighter text-foreground">Settings</span>
         </motion.button>
       </nav>
+
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => handleAction('emergency')}
+        className="fixed bottom-32 right-6 w-14 h-14 bg-danger text-white rounded-full lg:hidden z-50 flex items-center justify-center shadow-2xl border-4 border-background ring-4 ring-danger/20"
+        aria-label="Floating SOS Button"
+      >
+        <AlertTriangle className="w-6 h-6" />
+      </motion.button>
       
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
